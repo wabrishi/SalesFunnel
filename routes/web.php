@@ -15,12 +15,7 @@ $router->get('/forgot-password', [\App\Controllers\AuthController::class, 'showF
 $router->get('/reset-password', [\App\Controllers\AuthController::class, 'showResetPassword'], 'password.reset');
 
 $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Middleware\AuthMiddleware::class]], function($router) {
-    $router->get('/', function() {
-        \App\Helpers\View::render('layouts.app', [
-            'title' => 'Dashboard - Sales Funnel CRM',
-            'contentView' => 'home'
-        ]);
-    }, 'home');
+    $router->get('/', [\App\Controllers\HomeController::class, 'index'], 'home');
 
     // Users Module
     $router->group(['prefix' => '/users', 'middleware' => [[\App\Middleware\PermissionMiddleware::class, 'manage_users']]], function($router) {
@@ -41,5 +36,15 @@ $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Mid
     // Audit Logs Module
     $router->group(['prefix' => '/audit-logs', 'middleware' => [[\App\Middleware\PermissionMiddleware::class, 'manage_users']]], function($router) {
         $router->get('', [\App\Controllers\AuditLogController::class, 'index'], 'audit_logs.index');
+    });
+
+    // Leads Module
+    $router->group(['prefix' => '/leads', 'middleware' => [[\App\Middleware\PermissionMiddleware::class, 'view_leads']]], function($router) {
+        $router->get('', [\App\Controllers\LeadController::class, 'index'], 'leads.index');
+        $router->get('/create', [\App\Controllers\LeadController::class, 'create'], 'leads.create');
+        $router->post('/create', [\App\Controllers\LeadController::class, 'store'], 'leads.store');
+        $router->get('/{id}/edit', [\App\Controllers\LeadController::class, 'edit'], 'leads.edit');
+        $router->post('/{id}/edit', [\App\Controllers\LeadController::class, 'update'], 'leads.update');
+        $router->post('/{id}/delete', [\App\Controllers\LeadController::class, 'delete'], 'leads.delete');
     });
 });

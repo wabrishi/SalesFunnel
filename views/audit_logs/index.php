@@ -38,8 +38,8 @@
                     <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                         <?php if ($log['old_values'] || $log['new_values']): ?>
                             <button onclick='alert(
-                                "Old: \n" + <?= json_encode($log['old_values'] ?? "None") ?> +
-                                "\n\nNew: \n" + <?= json_encode($log['new_values'] ?? "None") ?>
+                                "Old: \n" + <?= json_encode($log['old_values'] ?? "None", JSON_HEX_APOS | JSON_HEX_QUOT) ?> +
+                                "\n\nNew: \n" + <?= json_encode($log['new_values'] ?? "None", JSON_HEX_APOS | JSON_HEX_QUOT) ?>
                             )' class="text-indigo-600 hover:text-indigo-900 text-xs">View Diff</button>
                         <?php else: ?>
                             -
