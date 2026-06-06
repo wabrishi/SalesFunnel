@@ -1,5 +1,11 @@
 <div class="mb-6 flex justify-between items-center">
-    <h2 class="text-2xl font-bold text-gray-800">Lead: <?= e($lead['first_name'] . ' ' . $lead['last_name']) ?></h2>
+    <h2 class="text-2xl font-bold text-gray-800">
+        Lead: <?= e($lead['first_name'] . ' ' . $lead['last_name']) ?>
+        <?php $health = \App\Helpers\LeadHealth::calculateScore($lead); ?>
+        <span class="ml-4 px-3 py-1 text-sm rounded-full font-semibold <?= $health['color'] ?>">
+            <?= e($health['label']) ?> (<?= $health['score'] ?>)
+        </span>
+    </h2>
     <div>
         <a href="/leads/<?= $lead['id'] ?>/edit" class="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300">Edit Lead</a>
     </div>
@@ -24,6 +30,26 @@
                 <p><span class="font-medium text-gray-500 w-24 inline-block">Assigned To:</span> <?= e($lead['assigned_name'] ?: 'Unassigned') ?></p>
                 <p><span class="font-medium text-gray-500 w-24 inline-block">Created By:</span> <?= e($lead['creator_name']) ?></p>
             </div>
+
+            <?php if ($lead['status'] !== 'Converted'): ?>
+            <div class="mt-8 border-t pt-4">
+                <h3 class="text-sm font-bold text-gray-700 mb-3">Convert to Opportunity</h3>
+                <form action="/opportunities/convert/<?= $lead['id'] ?>" method="POST" class="space-y-3">
+                    <?= \App\Middleware\CsrfMiddleware::csrfField() ?>
+                    <div>
+                        <input type="text" name="name" placeholder="Opportunity Name *" required class="block w-full border-gray-300 rounded-md text-sm">
+                    </div>
+                    <div>
+                        <input type="number" step="0.01" name="value" placeholder="Expected Value ($)" class="block w-full border-gray-300 rounded-md text-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md text-sm hover:bg-green-700 font-medium">Convert</button>
+                </form>
+            </div>
+            <?php else: ?>
+                <div class="mt-8 bg-green-50 border border-green-200 text-green-800 rounded p-3 text-sm font-medium text-center">
+                    Lead is Converted.
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 

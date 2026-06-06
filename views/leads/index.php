@@ -56,11 +56,13 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status & Priority</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Follow-Up</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Health</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 <?php foreach ($leads as $lead): ?>
+                <?php $health = \App\Helpers\LeadHealth::calculateScore($lead); ?>
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="/leads/<?= $lead['id'] ?>" class="text-sm font-bold text-indigo-600 hover:text-indigo-900"><?= e($lead['first_name'] . ' ' . $lead['last_name']) ?></a>
@@ -106,6 +108,11 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <?= e($lead['assigned_name'] ?: 'Unassigned') ?>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded <?= $health['color'] ?>">
+                            <?= e($health['label']) ?> (<?= $health['score'] ?>)
+                        </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                         <form method="POST" action="/leads/<?= $lead['id'] ?>/delete" class="inline" onsubmit="return confirm('Are you sure you want to delete this lead?');">

@@ -6,6 +6,9 @@
         <nav class="space-y-1 px-2">
             <a href="/" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-700 hover:text-white text-gray-300">Dashboard</a>
             <a href="/leads" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-700 hover:text-white text-gray-300">Leads</a>
+            <?php if ((new \App\Services\RoleService())->hasPermission(\App\Helpers\Session::get('user_id'), 'view_kanban')): ?>
+                <a href="/opportunities" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-700 hover:text-white text-gray-300">Kanban Board</a>
+            <?php endif; ?>
             <?php if ((new \App\Services\RoleService())->hasPermission(\App\Helpers\Session::get('user_id'), 'manage_users')): ?>
                 <a href="/users" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-700 hover:text-white text-gray-300">Users</a>
                 <a href="/roles" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-700 hover:text-white text-gray-300">Roles</a>

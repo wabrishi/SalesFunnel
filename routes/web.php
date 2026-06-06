@@ -59,4 +59,11 @@ $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Mid
         $router->post('/{id}/complete', [\App\Controllers\FollowUpController::class, 'complete'], 'follow_ups.complete');
         $router->post('/{id}/delete', [\App\Controllers\FollowUpController::class, 'delete'], 'follow_ups.delete');
     });
+
+    // Opportunities & Kanban Module
+    $router->group(['prefix' => '/opportunities', 'middleware' => [[\App\Middleware\PermissionMiddleware::class, 'manage_opportunities']]], function($router) {
+        $router->get('', [\App\Controllers\OpportunityController::class, 'index'], 'opportunities.index');
+        $router->post('/convert/{id}', [\App\Controllers\OpportunityController::class, 'convertLead'], 'opportunities.convert');
+        $router->post('/{id}/stage', [\App\Controllers\OpportunityController::class, 'updateStage'], 'opportunities.stage.update');
+    });
 });
