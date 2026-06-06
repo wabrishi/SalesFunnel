@@ -79,6 +79,26 @@ class LeadController
         }
     }
 
+    public function show(int $id): void
+    {
+        $lead = $this->leadService->getLeadById($id);
+        if (!$lead) {
+            Session::flash('error', 'Lead not found.');
+            Redirect::to('/leads');
+        }
+
+        $users = $this->userService->getAllUsers();
+        $followUps = (new \App\Services\FollowUpService())->getFollowUpsForLead($id);
+
+        View::render('layouts.app', [
+            'title' => 'Lead Details: ' . e($lead['first_name'] . ' ' . $lead['last_name']),
+            'contentView' => 'leads.show',
+            'lead' => $lead,
+            'users' => $users,
+            'followUps' => $followUps
+        ]);
+    }
+
     public function edit(int $id): void
     {
         $lead = $this->leadService->getLeadById($id);

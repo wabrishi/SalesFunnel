@@ -43,8 +43,20 @@ $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Mid
         $router->get('', [\App\Controllers\LeadController::class, 'index'], 'leads.index');
         $router->get('/create', [\App\Controllers\LeadController::class, 'create'], 'leads.create');
         $router->post('/create', [\App\Controllers\LeadController::class, 'store'], 'leads.store');
+        $router->get('/{id}', [\App\Controllers\LeadController::class, 'show'], 'leads.show');
         $router->get('/{id}/edit', [\App\Controllers\LeadController::class, 'edit'], 'leads.edit');
         $router->post('/{id}/edit', [\App\Controllers\LeadController::class, 'update'], 'leads.update');
         $router->post('/{id}/delete', [\App\Controllers\LeadController::class, 'delete'], 'leads.delete');
+
+        // Follow-Up nested routes
+        $router->post('/{id}/follow-ups', [\App\Controllers\FollowUpController::class, 'store'], 'follow_ups.store');
+    });
+
+    // Follow-Ups Global operations
+    $router->group(['prefix' => '/follow-ups', 'middleware' => [[\App\Middleware\PermissionMiddleware::class, 'manage_follow_ups']]], function($router) {
+        $router->get('/{id}/edit', [\App\Controllers\FollowUpController::class, 'edit'], 'follow_ups.edit');
+        $router->post('/{id}/edit', [\App\Controllers\FollowUpController::class, 'update'], 'follow_ups.update');
+        $router->post('/{id}/complete', [\App\Controllers\FollowUpController::class, 'complete'], 'follow_ups.complete');
+        $router->post('/{id}/delete', [\App\Controllers\FollowUpController::class, 'delete'], 'follow_ups.delete');
     });
 });
