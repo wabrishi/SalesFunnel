@@ -66,4 +66,15 @@ $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Mid
         $router->post('/convert/{id}', [\App\Controllers\OpportunityController::class, 'convertLead'], 'opportunities.convert');
         $router->post('/{id}/stage', [\App\Controllers\OpportunityController::class, 'updateStage'], 'opportunities.stage.update');
     });
+
+    // Customers Module
+    $router->group(['prefix' => '/customers', 'middleware' => [[\App\Middleware\PermissionMiddleware::class, 'manage_customers']]], function($router) {
+        $router->get('', [\App\Controllers\CustomerController::class, 'index'], 'customers.index');
+        $router->get('/create', [\App\Controllers\CustomerController::class, 'create'], 'customers.create');
+        $router->post('/create', [\App\Controllers\CustomerController::class, 'store'], 'customers.store');
+        $router->get('/{id}', [\App\Controllers\CustomerController::class, 'show'], 'customers.show');
+        $router->get('/{id}/edit', [\App\Controllers\CustomerController::class, 'edit'], 'customers.edit');
+        $router->post('/{id}/edit', [\App\Controllers\CustomerController::class, 'update'], 'customers.update');
+        $router->post('/{id}/contacts', [\App\Controllers\CustomerController::class, 'storeContact'], 'customers.contacts.store');
+    });
 });
