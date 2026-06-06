@@ -87,13 +87,17 @@ class LeadController
             Redirect::to('/leads');
         }
 
+        // We need next/last follow up for the Health Score calculation
+        $leadRepo = new \App\Repositories\LeadRepository();
+        $enrichedLead = $leadRepo->findById($id);
+
         $users = $this->userService->getAllUsers();
         $followUps = (new \App\Services\FollowUpService())->getFollowUpsForLead($id);
 
         View::render('layouts.app', [
-            'title' => 'Lead Details: ' . e($lead['first_name'] . ' ' . $lead['last_name']),
+            'title' => 'Lead Details: ' . e($enrichedLead['first_name'] . ' ' . $enrichedLead['last_name']),
             'contentView' => 'leads.show',
-            'lead' => $lead,
+            'lead' => $enrichedLead,
             'users' => $users,
             'followUps' => $followUps
         ]);

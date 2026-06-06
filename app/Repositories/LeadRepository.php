@@ -63,7 +63,9 @@ class LeadRepository
         $stmt = $this->db->prepare("
             SELECT l.*,
                    CONCAT(a.first_name, ' ', a.last_name) as assigned_name,
-                   CONCAT(c.first_name, ' ', c.last_name) as creator_name
+                   CONCAT(c.first_name, ' ', c.last_name) as creator_name,
+                   (SELECT CONCAT(follow_up_date, ' ', follow_up_time) FROM follow_ups WHERE lead_id = l.id AND status = 'Completed' ORDER BY follow_up_date DESC, follow_up_time DESC LIMIT 1) as last_follow_up,
+                   (SELECT CONCAT(follow_up_date, ' ', follow_up_time) FROM follow_ups WHERE lead_id = l.id AND status = 'Pending' ORDER BY follow_up_date ASC, follow_up_time ASC LIMIT 1) as next_follow_up
             FROM leads l
             LEFT JOIN users a ON l.assigned_to = a.id
             LEFT JOIN users c ON l.created_by = c.id
