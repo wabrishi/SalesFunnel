@@ -54,6 +54,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status & Priority</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Follow-Up</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -62,12 +63,12 @@
                 <?php foreach ($leads as $lead): ?>
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900"><?= e($lead['first_name'] . ' ' . $lead['last_name']) ?></div>
-                        <div class="text-sm text-gray-500"><?= e($lead['company'] ?: 'No Company') ?></div>
+                        <a href="/leads/<?= $lead['id'] ?>" class="text-sm font-bold text-indigo-600 hover:text-indigo-900"><?= e($lead['first_name'] . ' ' . $lead['last_name']) ?></a>
+                        <div class="text-xs text-gray-500 mt-1"><?= e($lead['company'] ?: 'No Company') ?></div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900"><?= e($lead['email'] ?: 'No Email') ?></div>
-                        <div class="text-sm text-gray-500"><?= e($lead['phone'] ?: 'No Phone') ?></div>
+                        <div class="text-xs text-gray-500"><?= e($lead['phone'] ?: 'No Phone') ?></div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 mb-1"><?= e($lead['status']) ?></span><br>
@@ -76,11 +77,37 @@
                         ?>
                         <span class="text-xs font-medium <?= $pColor ?>"><?= e($lead['priority']) ?> Priority</span>
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <?php
+                            $indicatorHtml = '<span class="text-xs text-gray-500 italic">No Follow-Up</span>';
+                            if ($lead['next_follow_up']) {
+                                $nextTime = strtotime($lead['next_follow_up']);
+                                $diff = $nextTime - time();
+
+                                if ($diff < 0) {
+                                    $color = 'bg-red-100 text-red-800'; // Overdue
+                                    $label = 'Overdue';
+                                } elseif ($diff <= 7200) {
+                                    $color = 'bg-orange-100 text-orange-800'; // Due in < 2 hours
+                                    $label = 'Due Soon';
+                                } elseif (date('Y-m-d', $nextTime) === date('Y-m-d')) {
+                                    $color = 'bg-yellow-100 text-yellow-800'; // Due Today
+                                    $label = 'Due Today';
+                                } else {
+                                    $color = 'bg-green-100 text-green-800'; // Future
+                                    $label = 'Scheduled';
+                                }
+
+                                $dateStr = date('M d, g:i A', $nextTime);
+                                $indicatorHtml = "<span class='px-2 inline-flex text-xs leading-5 font-semibold rounded-full {$color}'>{$label}</span><div class='text-xs text-gray-500 mt-1'>{$dateStr}</div>";
+                            }
+                        ?>
+                        <?= $indicatorHtml ?>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <?= e($lead['assigned_name'] ?: 'Unassigned') ?>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <a href="/leads/<?= $lead['id'] ?>/edit" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                         <form method="POST" action="/leads/<?= $lead['id'] ?>/delete" class="inline" onsubmit="return confirm('Are you sure you want to delete this lead?');">
                             <?= \App\Middleware\CsrfMiddleware::csrfField() ?>
                             <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
