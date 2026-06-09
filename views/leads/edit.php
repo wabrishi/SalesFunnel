@@ -46,12 +46,23 @@
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700">Assign To</label>
-                <select name="assigned_to" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    <option value="">Unassigned</option>
-                    <?php foreach($users as $user): ?>
-                        <option value="<?= $user['id'] ?>" <?= $lead['assigned_to'] == $user['id'] ? 'selected' : '' ?>><?= e($user['first_name'] . ' ' . $user['last_name']) ?> (<?= e($user['email']) ?>)</option>
-                    <?php endforeach; ?>
-                </select>
+                <?php
+                    $roleSvc = new \App\Services\RoleService();
+                    $canAssign = $roleSvc->hasRole(\App\Helpers\Session::get('user_id'), 'Admin') || $roleSvc->hasRole(\App\Helpers\Session::get('user_id'), 'Sales Manager');
+                ?>
+                <?php if ($canAssign): ?>
+                    <select name="assigned_to" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="">Unassigned</option>
+                        <?php foreach($users as $user): ?>
+                            <option value="<?= $user['id'] ?>" <?= $lead['assigned_to'] == $user['id'] ? 'selected' : '' ?>><?= e($user['first_name'] . ' ' . $user['last_name']) ?> (<?= e($user['email']) ?>)</option>
+                        <?php endforeach; ?>
+                    </select>
+                <?php else: ?>
+                    <input type="hidden" name="assigned_to" value="<?= $lead['assigned_to'] ?>">
+                    <p class="mt-1 p-2 bg-gray-100 border border-gray-200 rounded-md text-sm text-gray-600">
+                        <?= e($lead['assigned_name'] ?: 'Unassigned') ?> (You do not have permission to reassign)
+                    </p>
+                <?php endif; ?>
             </div>
         </div>
 

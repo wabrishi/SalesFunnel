@@ -86,4 +86,15 @@ class LeadService
         }
         return false;
     }
+
+    public function bulkAssignLeads(array $leadIds, ?int $assignedTo): bool
+    {
+        $success = $this->leadRepository->bulkAssign($leadIds, $assignedTo);
+        if ($success) {
+            foreach ($leadIds as $id) {
+                $this->auditLogService->log('Bulk Reassigned Lead', 'Lead', $id, null, ['assigned_to' => $assignedTo]);
+            }
+        }
+        return $success;
+    }
 }

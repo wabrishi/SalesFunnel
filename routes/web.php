@@ -22,6 +22,8 @@ $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Mid
         $router->get('', [\App\Controllers\UserController::class, 'index'], 'users.index');
         $router->get('/create', [\App\Controllers\UserController::class, 'create'], 'users.create');
         $router->post('/create', [\App\Controllers\UserController::class, 'store'], 'users.store');
+        $router->get('/{id}/edit', [\App\Controllers\UserController::class, 'edit'], 'users.edit');
+        $router->post('/{id}/edit', [\App\Controllers\UserController::class, 'update'], 'users.update');
     });
 
     // Roles Module
@@ -44,6 +46,7 @@ $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Mid
         $router->get('/create', [\App\Controllers\LeadController::class, 'create'], 'leads.create');
         $router->post('/create', [\App\Controllers\LeadController::class, 'store'], 'leads.store');
         $router->get('/{id}', [\App\Controllers\LeadController::class, 'show'], 'leads.show');
+        $router->post('/bulk-assign', [\App\Controllers\LeadController::class, 'bulkAssign'], 'leads.bulk.assign');
         $router->get('/{id}/edit', [\App\Controllers\LeadController::class, 'edit'], 'leads.edit');
         $router->post('/{id}/edit', [\App\Controllers\LeadController::class, 'update'], 'leads.update');
         $router->post('/{id}/delete', [\App\Controllers\LeadController::class, 'delete'], 'leads.delete');

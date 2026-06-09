@@ -19,6 +19,9 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?= e($user['first_name'] . ' ' . $user['last_name']) ?> <span class="text-gray-500">(<?= e($user['email']) ?>)</span></td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= e($user['roles'] ?? 'No Role') ?></td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= e($user['status']) ?></td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="/users/<?= $user['id'] ?>/edit" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>

@@ -46,11 +46,38 @@
 </div>
 
 <!-- List -->
+<form method="POST" action="/leads/bulk-assign" id="bulkAssignForm">
+<?= \App\Middleware\CsrfMiddleware::csrfField() ?>
+
+<?php
+$roleSvc = new \App\Services\RoleService();
+$canAssign = $roleSvc->hasRole(\App\Helpers\Session::get('user_id'), 'Admin') || $roleSvc->hasRole(\App\Helpers\Session::get('user_id'), 'Sales Manager');
+if ($canAssign && !empty($leads)):
+?>
+<div class="bg-white shadow rounded-lg p-4 mb-4 flex items-center justify-between border-t-4 border-indigo-500">
+    <div class="text-sm font-medium text-gray-700">Bulk Assignment</div>
+    <div class="flex items-center space-x-2">
+        <select name="assigned_to" class="text-sm border-gray-300 rounded-md">
+            <option value="">Unassigned</option>
+            <?php foreach($users as $user): ?>
+                <option value="<?= $user['id'] ?>"><?= e($user['first_name'] . ' ' . $user['last_name']) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md text-sm hover:bg-indigo-700">Assign Selected</button>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="bg-white shadow rounded-lg overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <?php if ($canAssign): ?>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50">
+                    </th>
+                    <?php endif; ?>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status & Priority</th>
@@ -64,6 +91,11 @@
                 <?php foreach ($leads as $lead): ?>
                 <?php $health = \App\Helpers\LeadHealth::calculateScore($lead); ?>
                 <tr>
+                    <?php if ($canAssign): ?>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" name="lead_ids[]" value="<?= $lead['id'] ?>" class="lead-checkbox rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50">
+                    </td>
+                    <?php endif; ?>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="/leads/<?= $lead['id'] ?>" class="text-sm font-bold text-indigo-600 hover:text-indigo-900"><?= e($lead['first_name'] . ' ' . $lead['last_name']) ?></a>
                         <div class="text-xs text-gray-500 mt-1"><?= e($lead['company'] ?: 'No Company') ?></div>
@@ -123,9 +155,19 @@
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($leads)): ?>
-                    <tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No leads found.</td></tr>
+                    <tr><td colspan="<?= $canAssign ? '7' : '6' ?>" class="px-6 py-4 text-center text-sm text-gray-500">No leads found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
+</form>
+
+<?php if ($canAssign): ?>
+<script>
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.lead-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+</script>
+<?php endif; ?>

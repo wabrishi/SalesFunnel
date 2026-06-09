@@ -47,8 +47,19 @@ class LeadRepository
         }
 
         if (!empty($filters['assigned_to'])) {
-            $sql .= " AND l.assigned_to = ?";
-            $params[] = $filters['assigned_to'];
+            if ($filters['assigned_to'] === 'unassigned') {
+                $sql .= " AND l.assigned_to IS NULL";
+            } else {
+                $sql .= " AND l.assigned_to = ?";
+                $params[] = $filters['assigned_to'];
+            }
+        }
+
+        // Role-based visibility enforcement
+        if (!empty($filters['restrict_to_user_id'])) {
+            $sql .= " AND (l.assigned_to = ? OR l.created_by = ?)";
+            $params[] = $filters['restrict_to_user_id'];
+            $params[] = $filters['restrict_to_user_id'];
         }
 
         $sql .= " ORDER BY l.created_at DESC LIMIT $limit OFFSET $offset";
@@ -115,6 +126,19 @@ class LeadRepository
             $data['assigned_to'] ?: null,
             $id
         ]);
+    }
+
+    public function bulkAssign(array $leadIds, ?int $assignedTo): bool
+    {
+        if (empty($leadIds)) return false;
+
+        $inQuery = implode(',', array_fill(0, count($leadIds), '?'));
+        $sql = "UPDATE leads SET assigned_to = ? WHERE id IN ($inQuery)";
+
+        $params = array_merge([$assignedTo], $leadIds);
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
     }
 
     public function delete(int $id): bool
