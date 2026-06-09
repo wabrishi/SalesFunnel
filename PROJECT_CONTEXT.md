@@ -10,35 +10,39 @@ This project is a brand-new, web-based Sales Funnel CRM built from scratch. It a
 *   **Routing:** Custom lightweight routing system.
 *   **Migrations:** Custom PHP-based migration system.
 
-## Database Entities (Phase 1 focus)
+## Database Entities
 *   `users`, `roles`, `permissions`, `role_permissions`, `user_roles`, `audit_logs`
+*   `leads`, `lead_notes`, `follow_ups`, `opportunities`, `opportunity_history`
+*   Upcoming: `customers`, `customer_contacts`, `customer_addresses`
 
 ## Development Roadmap
 
-### Phase 1: Foundation & Security (Current)
+### Phase 1: Foundation & Security (Completed)
 * Project Structure, MVC Architecture, Custom Router, Custom Migration System, PDO Database Layer, Authentication (Login, Logout, Forgot Password), RBAC, Audit Logging, Tailwind Setup, Documentation.
 * Modules: User Management, Role Management, Permission Management.
 
-### Phase 2: Lead Management
-* Create, Edit, Delete, Search, Filter, Assign, Reassign Lead. Lead Import (CSV), Duplicate Detection, Timeline, Notes, Attachments.
+### Phase 2: Lead Management (Completed)
+* Create, Edit, Delete, Search, Filter, Assign, Reassign Lead. Duplicate Detection.
 * Lead Status: New, Contacted, Qualified, Unqualified, Converted, Lost.
 * Lead Priority: High, Medium, Low. Dashboard Indicators.
 
-### Phase 3: Follow-Up Management (Critical Module)
+### Phase 3: Follow-Up Management (Critical Module) (Completed)
 * Follow-Up Creation, Edit, Reschedule, Complete, Cancel. Types: Call, Meeting, WhatsApp, Email, Site Visit, Demo, Proposal Discussion.
 * Due Lead Indicators (Green, Yellow, Orange, Red color coding).
-* Dashboard Widgets & Automation (Auto Reminders, Escalations).
+* Dashboard Widgets.
 
-### Phase 4: Opportunity Management
-* Convert Lead to Opportunity, Pipeline, Revenue Forecast, Opportunity Activities/Notes/Attachments.
+### Phase 4: Opportunity Management (Completed)
+* Convert Lead to Opportunity, Pipeline, Revenue Forecast.
 * Opportunity Stages: Lead Generated, Qualification, Requirement Gathering, Proposal Shared, Negotiation, Decision Pending, Won, Lost.
-* Opportunity KPIs.
 
-### Phase 5: Sales Funnel Kanban Board
+### Phase 5: Sales Funnel Kanban Board (Completed)
 * Drag & Drop, Stage Movement, Stage History, Revenue Per Stage, Opportunity Count Per Stage.
-* Analytics: Conversion %, Funnel Leakage, Average Time In Stage.
 
-### Phase 6: Customer Management
+### MUST-HAVE CRM FEATURE: Lead Health Score (Completed)
+* Calculated based on Last Contact Date, Follow-Up Completion, Opportunity Progress, Response Activity.
+* Indicators: 🟢 Healthy, 🟡 Attention Needed, 🟠 At Risk, 🔴 Overdue / No Follow-Up.
+
+### Phase 6: Customer Management (In Progress)
 * Customer Master, Contacts, Addresses, GST Information, Linked Opportunities, Communication History. Customer Timeline.
 
 ### Phase 7: Activities & Communication Center
@@ -68,7 +72,3 @@ This project is a brand-new, web-based Sales Funnel CRM built from scratch. It a
 
 ### Phase 15: Production Hardening
 * Security (CSRF, XSS, Rate Limiting, Session Security). Performance (Database Indexing, Query Optimization, Caching Strategy). Documentation.
-
-### MUST-HAVE CRM FEATURE: Lead Health Score
-* Calculate based on Last Contact Date, Follow-Up Completion, Opportunity Progress, Response Activity.
-* Indicators: 🟢 Healthy, 🟡 Attention Needed, 🟠 At Risk, 🔴 Overdue / No Follow-Up.
