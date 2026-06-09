@@ -57,4 +57,52 @@ class UserController
             Session::flash('error', 'Creation failed.'); Redirect::back();
         }
     }
+
+    public function edit(int $id): void
+    {
+        $user = (new \App\Repositories\UserRepository())->findById($id);
+        if (!$user) {
+            Session::flash('error', 'User not found.');
+            Redirect::to('/users');
+        }
+
+        $userRoles = $this->roleService->getUserRoles($id); // Will need to adapt repository to return IDs, or modify fetch
+
+        // Since getUserRoles returns names, we fetch roles directly
+        $allRoles = clone $this->roleService->getAllRoles();
+        // Just fetch raw DB for role mapping
+        $db = \App\Services\Database::getInstance();
+        $stmt = $db->prepare("SELECT role_id FROM user_roles WHERE user_id = ?");
+        $stmt->execute([$id]);
+        $assignedRoleIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+        View::render('layouts.app', [
+            'title' => 'Edit User',
+            'contentView' => 'users.edit',
+            'user' => $user,
+            'roles' => $this->roleService->getAllRoles(),
+            'assignedRoleIds' => $assignedRoleIds
+        ]);
+    }
+
+    public function update(int $id): void
+    {
+        $data = [
+            'first_name' => $_POST['first_name'] ?? '',
+            'last_name' => $_POST['last_name'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'password' => $_POST['password'] ?? '',
+            'status' => $_POST['status'] ?? 'active'
+        ];
+
+        if (empty($data['email']) || empty($data['first_name'])) {
+            Session::flash('error', 'First Name and Email are required.'); Redirect::back();
+        }
+
+        if ($this->userService->updateUserWithRoles($id, $data, $_POST['roles'] ?? [])) {
+            Session::flash('success', 'User updated.'); Redirect::to('/users');
+        } else {
+            Session::flash('error', 'Update failed.'); Redirect::back();
+        }
+    }
 }
