@@ -14,6 +14,42 @@ class FollowUpRepository
         $this->db = Database::getInstance();
     }
 
+    public function getFiltered(string $filter = ''): array
+    {
+        $sql = "
+            SELECT f.*,
+                   CONCAT(u.first_name, ' ', u.last_name) as assigned_name,
+                   CONCAT(c.first_name, ' ', c.last_name) as creator_name,
+                   CONCAT(l.first_name, ' ', l.last_name) as lead_name
+            FROM follow_ups f
+            JOIN users u ON f.assigned_to = u.id
+            JOIN users c ON f.created_by = c.id
+            JOIN leads l ON f.lead_id = l.id
+            WHERE 1=1
+        ";
+
+        $params = [];
+        $today = date('Y-m-d');
+
+        if ($filter === 'due_today') {
+            $sql .= " AND f.status = 'Pending' AND f.follow_up_date = ?";
+            $params[] = $today;
+        } elseif ($filter === 'overdue') {
+            $sql .= " AND f.status = 'Pending' AND CONCAT(f.follow_up_date, ' ', f.follow_up_time) < NOW()";
+        } elseif ($filter === 'missed') {
+            $sql .= " AND f.status = 'Missed'";
+        } elseif ($filter === 'completed_today') {
+            $sql .= " AND f.status = 'Completed' AND DATE(f.updated_at) = ?";
+            $params[] = $today;
+        }
+
+        $sql .= " ORDER BY f.follow_up_date ASC, f.follow_up_time ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
     public function getByLeadId(int $leadId): array
     {
         $stmt = $this->db->prepare("

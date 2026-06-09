@@ -18,6 +18,19 @@ class FollowUpController
         $this->followUpService = new FollowUpService();
     }
 
+    public function index(): void
+    {
+        $filter = $_GET['filter'] ?? '';
+        $followUps = $this->followUpService->getFilteredFollowUps($filter);
+
+        View::render('layouts.app', [
+            'title' => 'Global Follow-Ups',
+            'contentView' => 'follow_ups.index',
+            'followUps' => $followUps,
+            'filter' => $filter
+        ]);
+    }
+
     public function store(int $leadId): void
     {
         $data = [

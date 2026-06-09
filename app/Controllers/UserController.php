@@ -61,16 +61,15 @@ class UserController
     public function edit(int $id): void
     {
         $user = (new \App\Repositories\UserRepository())->findById($id);
+
         if (!$user) {
             Session::flash('error', 'User not found.');
             Redirect::to('/users');
         }
 
-        $userRoles = $this->roleService->getUserRoles($id); // Will need to adapt repository to return IDs, or modify fetch
+        $allRoles = clone (object)$this->roleService;
+        $allRoles = $this->roleService->getAllRoles();
 
-        // Since getUserRoles returns names, we fetch roles directly
-        $allRoles = clone $this->roleService->getAllRoles();
-        // Just fetch raw DB for role mapping
         $db = \App\Services\Database::getInstance();
         $stmt = $db->prepare("SELECT role_id FROM user_roles WHERE user_id = ?");
         $stmt->execute([$id]);
@@ -80,7 +79,7 @@ class UserController
             'title' => 'Edit User',
             'contentView' => 'users.edit',
             'user' => $user,
-            'roles' => $this->roleService->getAllRoles(),
+            'roles' => $allRoles,
             'assignedRoleIds' => $assignedRoleIds
         ]);
     }
