@@ -57,6 +57,7 @@ $router->group(['middleware' => [\App\Middleware\CsrfMiddleware::class, \App\Mid
 
     // Follow-Ups Global operations
     $router->group(['prefix' => '/follow-ups', 'middleware' => [[\App\Middleware\PermissionMiddleware::class, 'manage_follow_ups']]], function($router) {
+        $router->get('', [\App\Controllers\FollowUpController::class, 'index'], 'follow_ups.index');
         $router->get('/{id}/edit', [\App\Controllers\FollowUpController::class, 'edit'], 'follow_ups.edit');
         $router->post('/{id}/edit', [\App\Controllers\FollowUpController::class, 'update'], 'follow_ups.update');
         $router->post('/{id}/complete', [\App\Controllers\FollowUpController::class, 'complete'], 'follow_ups.complete');

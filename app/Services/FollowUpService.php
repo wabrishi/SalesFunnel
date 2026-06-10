@@ -21,6 +21,11 @@ class FollowUpService
         return $this->followUpRepository->getByLeadId($leadId);
     }
 
+    public function getFilteredFollowUps(string $filter = ''): array
+    {
+        return $this->followUpRepository->getFiltered($filter);
+    }
+
     public function getFollowUpById(int $id): ?array
     {
         return $this->followUpRepository->findById($id);
